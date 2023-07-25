@@ -1,0 +1,212 @@
+COMP250 – Summer 2023
+Project 1: Concordance
+
+Purpose
+
+This project is meant to give you experience with sorting, binary searching, and Big-Oh complexity.
+
+Objective
+
+Your goal is to take a book, as a large text file, and build a digital “concordance”.  A concordance is like an index for a book in that it contains entries for words in the book, but it also includes passages from the book containing that word.  For example, a query for the word Dormouse in Alice in Wonderland would produce results like:
+
+14153
+he poured a little hot tea upon its nose. The Dormouse shook its head impatiently, and said
+
+14803
+`Once upon a time there were three little sisters,' the Dormouse began in a great hurry; `and their names were Elsie, 
+
+where 14153 is the position of the word Dormouse in the file, and the passage includes the 10 words before and after Dormouse.
+
+Approach
+
+You should approach the project in four steps:
+
+	1.  Open the book as a text file, identify each word, and save its position
+	2.  Sort the words in the text file alphabetically using a merge sort
+	3.  Remove duplicate words, saving only their indices
+	4.  Allow the user to enter words, and return the passages where the words occur.
+
+
+STEP 1:  READ THE TEXT FILE AND NUMBER ALL THE WORDS
+
+Consider a text file fox.txt containing:
+
+the quick brown fox jumps over the lazy dog
+
+Generate a new file fox.txt_words.txt that reads as follows:
+
+9
+the 0
+quick 1
+brown 2
+fox 3
+jumps 4
+over 5
+the 6
+lazy 7
+dog 8
+
+where the first number, 9, is the total number of words, and what follows is each word and its placement in the file.
+
+Suggested approach
+
+1.  Read the text file and count the words but don’t save them.
+2.  Make an array to hold the words.txt
+3.  Make a new FileReader and Scanner object, read the words from the text file into that array
+4.  Write the number of words to a new text file, then step through the array and write each word and its index to that file.
+
+
+STEP 2:  SORT THE WORDS ALPHABETICALLY
+
+Starting with the text file fox.txt_words.txt, make a new text file fox.txt_sorted.txt .  That file should contain the same words as the previous file, but this time the words are in alphabetical order.  This is what the file should look like:
+
+9
+brown 2
+dog 8
+fox 3
+jumps 4
+lazy 7
+over 5
+quick 1
+the 0
+the 6
+
+You may try this initially with a bubble sort.  However, to get full credit for this step, you must use a merge sort to sort the words.
+
+Approach:
+1.  Make a filereader/scanner for words.txt, read the number of words, and make two arrays: a string array to hold the words, and an int array to hold the indices.
+2.  Use the merge sort algorithm we learned in class to sort the string array.  Make sure when you adjust the string array that you also adjust the int array, preserving the index of each word
+3.  Make a printwriter and write the words and indices to a new file fox.txt_sorted.txt.
+
+
+STEP 3:  REMOVE DUPLICATE WORDS
+
+Now use fox.txt_sorted.txt to make a fourth file fox.txt_index.txt that reads like this:
+
+brown 2
+dog 8
+fox 3
+jumps 4
+lazy 7
+over 5
+quick 1
+the 0 6
+
+Where 8 refers to the number of unique words, and each word is followed by one or more indices.
+
+Approach:
+1.  Make a filereader and printwriter
+2.  Repeat the following for each word:
+	3.  Read a word and an index
+	4.  Check if that word is the same as a the previous word read from the input file
+	5.  If no, write that word and its index to the output file
+	6.  If yes, just write the index to the output file
+
+STEP 4:  QUERY AND SEARCH
+
+Your program should now prompt the user for a word, find the word, and return its indices.  For example:
+
+Enter a word:  the
+the: 0 6
+Enter a word: lazy
+lazy: 7
+Enter a word:  dormouse
+Can’t find dormouse in the text
+
+You must use a binary search, like we did in class, to locate the word.
+
+Your program should continue to query and search until the user closes the program.
+
+Approach:
+1.  Make an filereader/scanner for fox.txt_index.txt
+2.  Read in each word and its indices.  You may want to use the nextLine function to read all the indices as a single string, in which case you’ll have two arrays:  string words[] and string indices[].
+3.  Prompt the user for a word.
+4.  Use a binary search to find the matching word.
+5.  Print out its indices if it exists or an error if it doesn’t
+6.  Repeat steps 3 and 4 forever
+
+STEP 5:  PRINT OUT THE SURROUNDING WORDS
+
+Modify your code in step 4 so that, for each index, it prints out text from the original file.  You should print out the previous two words, the query word, and the subsequent two words. For example:
+
+Enter a word:  the
+0: the quick brown
+6: jumps over the lazy dog
+
+Enter a word: lazy
+7: over the lazy dog
+
+Enter a word:  dormouse
+Can’t find dormouse in the text
+
+Approach:
+
+Modify your code from Step 4:
+
+1.  After reading from fox.txt_index.txt, make a second array string originaltext[] and read in the original fox.txt word-by-word.
+2.  After querying the user and searching for the word, get its index entry and:
+3.  Make an istringstream object to parse the index string
+4.  Read a number index from that string: an index where that word occurs
+5.  Make a for loop, starting at i=index-2 and going to i<=index+2
+6.  Print originaltext[i] followed by a space
+7.  Repeat steps 4 – 7 until you have printed all the indices.
+
+STEP 6:  TIMING
+
+1.
+Go to Project Gutenberg and download three books: a short book, a medium book, and a long book.  For example, Alice in Wonderland’s page is
+
+https://www.gutenberg.org/ebooks/11
+
+and you should download the Plain Text as alice.txt.
+
+I recommend Alice in Wonderland or the Wizard of Oz as a short book,  Great Expectations as a medium book, and War and Peace or the King James Bible as a long book.
+
+2.
+Use your STEP 1 code and record the total number of words in each book.
+
+3.
+Use System.currentTimeMillis to measure the elapsed time for STEP 1 on each book.  Depending on the speed of your computer, you may or may not get non-zero values.  If you do, do you see a O(n) runtime?  (Use the approach below).
+
+4.
+Now measure the merge sort times in STEP 2.  Unless your computer is really fast, you ought to see a measurable delay.  Run the program a few times on each book, throw out any outliers, and average the runtimes for each book.
+
+Since merge-sort is O(n log n), the runtime should be
+	runtime = k * #words * log(#words)
+Try computing k for each book:
+	k = runtime / ( #words * log(#words))   the log base shouldn’t matter.
+Are all three k’s approximately the same?
+
+5.
+If you have a really slow computer, you might be able to time the queries and see if they have a O(log n) time.  Don’t bother doing this if they all have zero time.
+
+BONUS STEP: QUICKSORT
+
+Using only pseudocode as your reference (see the Wikipedia page, for example), implement Quicksort to sort the words in Step 2.   You cannot get credit for this step unless you finished step 2 with mergesort.
+
+Grading
+
+Grading for this project will be as follows:
+
+You complete STEP 1 correctly				50% (F+)
+You complete STEP 2, but use a sort that isn’t merge sort 	60% (D-)
+You complete STEP 2 using merge sort			70% (C-)
+You complete STEP 3 					75% (C)
+You complete STEP 4						85% (B)
+You complete STEP 5						95% (A)
+You measure the timings in STEP 6				100% (A+)
+You implement Quicksort					110%
+
+No credit will be given for code that doesn’t compile.  If you only partially complete a step, comment your work on the step out before submitting.
+
+
+Basic Requirements
+
+Your program must be written in Java
+You may not use built in libraries for sorting or searching
+Your program must compile without errors
+You must submit your .java  files to Blackboard
+You must include a statement telling which steps you completed
+You are expected to demonstrate your completed project to me
+Your program must be your own work, must follow the approach listed above, and must produce the _words.txt, _sorted.txt, _index.txt  text files.
+If you use any references, you must cite them.
